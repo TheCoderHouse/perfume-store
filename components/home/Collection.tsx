@@ -20,8 +20,8 @@ const PICKS = [
 const LIST = PICKS.map((x) => ({ ...getProduct(x.slug)!, img: x.img, bg: x.bg }));
 const N = LIST.length;
 const EXTRA = 3; // extra copies of the film ahead of the first panel: the strip starts several panels early
-const ZOOM_START = 0.6; // photo scale at the start (it grows to 1 as the window opens)
-const GAP_START = 0.55; // space between panels at the start, as a fraction of a panel width (it closes up)
+const ZOOM_START = 0.62; // photo scale at the start (it grows to 1 as the window opens)
+const GAP_START = 0.1; // space between panels at the start, as a fraction of a panel width (it closes up)
 const LAND = 3; // the strip lands with the 4th product centred, so the move never has to swing back
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -95,19 +95,31 @@ const FRAG = /* glsl */ `
   uniform float uZoom;
   uniform float uW;
   uniform float uFade;
+  uniform float uFit; // 1 → show the whole photo (fit its width) instead of cropping it to fill
+  uniform float uFeather; // px; > 0 → the panel's edges melt into the ground
   varying vec2 vPos;
   varying vec2 vCenter;
 
   void main() {
     // the photo is flat: sample it by where this point is relative to the photo's own (unrotated) centre
     vec2 uv = (vPos - vCenter) / (vec2(uCw, uPanelH) * uZoom) + 0.5;
+    vec2 raw = uv;
     vec3 col = uBg;
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0) {
-      // cover-fit a square photo into the panel
-      if (uPlane < 1.0) uv.x = (uv.x - 0.5) * uPlane + 0.5;
-      else uv.y = (uv.y - 0.5) / uPlane + 0.5;
-      vec4 tex = texture2D(uTex, uv);
-      col = mix(uBg, tex.rgb, tex.a); // the cut-outs are transparent: sit them on the product's own ground
+      vec2 t = uv;
+      if (uFit > 0.5) {
+        // show the whole square photo: fit its width to the panel; any spare height is just the ground colour
+        if (uPlane < 1.0) t.y = (t.y - 0.5) / uPlane + 0.5;
+        else t.x = (t.x - 0.5) * uPlane + 0.5;
+      } else {
+        // cover-fit a square photo into the panel
+        if (uPlane < 1.0) t.x = (t.x - 0.5) * uPlane + 0.5;
+        else t.y = (t.y - 0.5) / uPlane + 0.5;
+      }
+      if (t.x >= 0.0 && t.x <= 1.0 && t.y >= 0.0 && t.y <= 1.0) {
+        vec4 tex = texture2D(uTex, t);
+        col = mix(uBg, tex.rgb, tex.a); // the cut-outs are transparent: sit them on the product's own ground
+      }
     }
     float g = dot(col, vec3(0.299, 0.587, 0.114));
 
@@ -117,6 +129,12 @@ const FRAG = /* glsl */ `
     float a = mix(1.0, 0.3 + 0.7 * near, uFade);
 
     col = mix(vec3(g) * 0.3, col, uLit);
+
+    // soft edges: fade the panel into the ground with a gradient (once the intro has finished)
+    if (uFeather > 0.5) {
+      vec2 e = min(raw, 1.0 - raw) * vec2(uCw, uPanelH) * uZoom;
+      a *= mix(1.0, smoothstep(0.0, uFeather * uZoom, min(e.x, e.y)), 1.0 - uFade);
+    }
     gl_FragColor = vec4(col, a);
     #include <colorspace_fragment>
   }
@@ -170,10 +188,10 @@ export default function Collection() {
         H = stage.clientHeight;
         const phone = W < 900;
         // desktop: wide panels, full height. phone: one tall-ish panel nearly the screen width, with the strip bending around it
-        cw = phone ? Math.min(W * 0.84, 480) : Math.min(W * 0.56, H * 0.88);
-        ph = phone ? Math.min(H * 0.6, cw * 1.5) : H;
+        cw = phone ? Math.min(W * 0.94, 560) : Math.min(W * 0.68, H * 1.2);
+        ph = phone ? cw * 1.1 : H; // phones: a near-square card, so the whole photo fits across the width
         lift = phone ? H * 0.05 : 0; // phones: raise the strip so the title below has room
-        gap = W * (phone ? 0.03 : 0.011);
+        gap = W * (phone ? 0.02 : 0.011);
         step = cw + gap;
         stage.style.setProperty("--cg-w", `${cw}px`);
         stage.style.setProperty("--cg-gap", `${gap}px`);
@@ -217,6 +235,8 @@ export default function Collection() {
         uZoom: { value: ZOOM_START },
         uW: { value: 1 },
         uFade: { value: 1 },
+        uFeather: { value: 0 },
+        uFit: { value: 0 },
         uSide: { value: 1 },
         uSideMask: { value: 0.045 },
         uSideOff: { value: 0 },
@@ -246,6 +266,8 @@ export default function Collection() {
         shared.uCw.value = cw;
         shared.uPanelH.value = ph;
         shared.uPlane.value = cw / ph;
+        shared.uFit.value = 1; // always show the whole photo — never crop its top / bottom / sides
+        shared.uFeather.value = W < 900 ? 90 : 0; // phones: soft gradient edges instead of a hard card border
         scene.position.y = lift;
         // the S-path is scaled to the screen: by height on a wide screen, by width on a phone
         shared.uR.value = W < 900 ? W * 0.55 : H;
@@ -307,7 +329,7 @@ export default function Collection() {
         const gap0 = GAP_START * cw;
         intro.extra = 1;
         intro.bend = 1;
-        intro.mask = 0.38;
+        intro.mask = 0.52;
         intro.side = 1;
         intro.fade = 1;
         intro.zoom = ZOOM_START;
@@ -373,9 +395,9 @@ export default function Collection() {
       // straightens until the panels fill the screen — landing with panel LAND in the middle.
       tl.to(stage, { backgroundColor: DARK, duration: 1.9, ease: "power2.inOut" }, 0.3)
         .to(intro, { scroll: () => -LAND * step, duration: 2.8, ease: "power2.out" }, 0)
-        .to(intro, { mask: 0.52, duration: 1.2, ease: "none" }, 0)
+        .to(intro, { mask: 0.7, duration: 1.2, ease: "none" }, 0)
         .to(intro, { mask: 1, duration: 1.5, ease: "power2.inOut" }, 1.2)
-        .to(intro, { zoom: 0.75, duration: 1.2, ease: "none" }, 0)
+        .to(intro, { zoom: 0.84, duration: 1.2, ease: "none" }, 0)
         .to(intro, { zoom: 1, duration: 1.5, ease: "power2.inOut" }, 1.2)
         .to(intro, { bend: 0, duration: 2.7, ease: "power1.inOut" }, 0.2)
         .to(intro, { gapK: 1, duration: 2.2, ease: "power2.inOut" }, 0.5)
@@ -562,7 +584,7 @@ export default function Collection() {
         <div
           ref={stageRef}
           className="relative block h-[100svh] w-full overflow-hidden bg-[#171513] text-[#efe5d0] motion-reduce:hidden"
-          style={{ ["--cg-w" as string]: "min(84vw, 480px)", ["--cg-gap" as string]: "3vw", ["--cg-h" as string]: "64svh" }}
+          style={{ ["--cg-w" as string]: "min(94vw, 560px)", ["--cg-gap" as string]: "3vw", ["--cg-h" as string]: "64svh" }}
         >
           <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
 
