@@ -9,7 +9,7 @@ export default function Bestsellers() {
   return (
     <section className="mx-auto max-w-[1600px] px-5 py-16 sm:px-10 sm:py-24 lg:py-32">
       <div className="mb-14 flex items-end justify-between gap-6">
-        <Words text="Most loved." className="display text-6xl italic sm:text-8xl" />
+        <Words text="Most loved." className="display text-6xl sm:text-8xl" />
         <Link href="/shop" className="btn btn-ghost max-sm:!hidden shrink-0 self-end">Shop all <ArrowRight size={14} /></Link>
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">

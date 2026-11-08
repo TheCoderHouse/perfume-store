@@ -104,7 +104,7 @@ export default function Header() {
             <nav className="mt-14 flex flex-1 flex-col gap-3" aria-label="Mobile">
               {[...NAV, { href: user ? "/account" : "/login", label: user ? "Account" : "Sign in" }, { href: "/wishlist", label: "Wishlist" }].map((n, i) => (
                 <motion.div key={n.label} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.25 + i * 0.07, duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
-                  <Link href={n.href} className="display block text-5xl italic">
+                  <Link href={n.href} className="display block text-5xl">
                     {n.label}
                   </Link>
                 </motion.div>

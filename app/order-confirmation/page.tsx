@@ -13,13 +13,13 @@ export default function Confirmation() {
   if (!order)
     return (
       <div className="grid min-h-[80svh] place-items-center px-5 text-center">
-        <div><p className="display text-5xl italic">No recent order.</p><Link href="/shop" className="btn mt-8">Shop fragrances</Link></div>
+        <div><p className="display text-5xl">No recent order.</p><Link href="/shop" className="btn mt-8">Shop fragrances</Link></div>
       </div>
     );
   return (
     <section className="mx-auto max-w-2xl px-5 pb-12 pt-40 text-center">
       <span className="mx-auto grid size-20 place-items-center rounded-full bg-[#D9E9DA] text-[#2F6B4A]"><Check size={34} strokeWidth={1.5} /></span>
-      <h1 className="display mt-8 text-6xl italic sm:text-7xl">Thank you.</h1>
+      <h1 className="display mt-8 text-6xl sm:text-7xl">Thank you.</h1>
       <p className="mt-4 text-sm opacity-75">Order <b>{order.id}</b> is confirmed. A discovery vial is tucked into your parcel.</p>
       <div className="mt-10 rounded-[2px] border border-line p-8 text-left text-sm">
         <ul className="space-y-3">

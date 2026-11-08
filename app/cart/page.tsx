@@ -43,7 +43,7 @@ export default function CartPage() {
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between gap-4">
                         <div>
-                          <Link href={`/product/${p.slug}`} className="display text-2xl italic sm:text-3xl">{p.name}</Link>
+                          <Link href={`/product/${p.slug}`} className="display text-2xl sm:text-3xl">{p.name}</Link>
                           <p className="mt-1 text-xs opacity-65">{p.concentration} · {it.ml} ml</p>
                           <p className="mt-1 text-xs opacity-65">{inr(price)} each</p>
                         </div>

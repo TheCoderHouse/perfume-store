@@ -44,7 +44,7 @@ export default function Account() {
 
         {tab === "orders" && (
           <div className="mt-10 space-y-5">
-            {orders.length === 0 && <div className="py-20 text-center"><p className="display text-4xl italic">No orders yet.</p><Link href="/shop" className="btn mt-8">Begin exploring</Link></div>}
+            {orders.length === 0 && <div className="py-20 text-center"><p className="display text-4xl">No orders yet.</p><Link href="/shop" className="btn mt-8">Begin exploring</Link></div>}
             {orders.map((o) => (
               <article key={o.id} className="rounded-[2px] border border-line p-7">
                 <div className="flex flex-wrap items-center justify-between gap-3">

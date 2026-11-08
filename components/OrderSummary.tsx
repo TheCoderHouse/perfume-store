@@ -9,7 +9,7 @@ export default function OrderSummary() {
   const t = cartTotals(items, promo);
   return (
     <div className="rounded-[2px] border border-line p-7">
-      <h2 className="display text-3xl italic">Order summary</h2>
+      <h2 className="display text-3xl">Order summary</h2>
       <ul className="mt-6 space-y-5">
         {items.map((it) => {
           const p = getProduct(it.slug)!;

@@ -50,7 +50,7 @@ export default function CartDrawer() {
             data-lenis-prevent
           >
             <div className="flex items-center justify-between border-b border-black/10 px-7 py-6">
-              <h2 className="display text-3xl italic">Your bag <span className="eyebrow not-italic opacity-60">({t.count})</span></h2>
+              <h2 className="display text-3xl">Your bag <span className="eyebrow opacity-60">({t.count})</span></h2>
               <button className="grid size-11 place-items-center rounded-full hover:bg-black/5 cursor-pointer" aria-label="Close bag" onClick={() => setCartOpen(false)}>
                 <X size={20} />
               </button>
@@ -59,7 +59,7 @@ export default function CartDrawer() {
             {items.length === 0 ? (
               <div className="grid flex-1 place-items-center px-8 text-center">
                 <div>
-                  <p className="display text-4xl italic">Your bag is empty.</p>
+                  <p className="display text-4xl">Your bag is empty.</p>
                   <p className="mt-3 text-sm opacity-70">Let a fragrance find you.</p>
                   <Link href="/shop" onClick={() => setCartOpen(false)} className="btn mt-8">Explore the collection</Link>
                 </div>

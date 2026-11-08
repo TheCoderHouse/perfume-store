@@ -21,7 +21,7 @@ export default function Testimonials() {
       <div className="relative mt-10 min-h-[15rem] sm:min-h-[12rem]" aria-live="polite">
         <AnimatePresence mode="wait">
           <motion.blockquote key={i} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}>
-            <p className="display text-3xl italic leading-tight sm:text-5xl">“{q.q}”</p>
+            <p className="display text-3xl leading-tight sm:text-5xl">“{q.q}”</p>
             <footer className="eyebrow mt-8 opacity-70">{q.a} · {q.p}</footer>
           </motion.blockquote>
         </AnimatePresence>

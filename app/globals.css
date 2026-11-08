@@ -346,3 +346,28 @@ html.lenis body {
   transform: translateY(110%);
   opacity: 0;
 }
+
+/* No italics anywhere on the site */
+em,
+i,
+cite,
+address,
+dfn,
+var {
+  font-style: normal;
+}
+
+/* Phones: a smaller type scale for a calmer, more readable layout */
+@media (max-width: 639px) {
+  html {
+    font-size: 14px;
+  }
+  .text-9xl { font-size: 3.4rem; }
+  .text-8xl { font-size: 3rem; }
+  .text-7xl { font-size: 2.6rem; }
+  .text-6xl { font-size: 2.3rem; }
+  .text-5xl { font-size: 2rem; }
+  .text-4xl { font-size: 1.65rem; }
+  .text-3xl { font-size: 1.4rem; }
+  .text-2xl { font-size: 1.2rem; }
+}

@@ -76,7 +76,7 @@ export default function ShopClient() {
 
         {list.length === 0 ? (
           <div className="py-32 text-center">
-            <p className="display text-4xl italic">Nothing matches just yet.</p>
+            <p className="display text-4xl">Nothing matches just yet.</p>
             <button className="btn btn-ghost mt-8" onClick={() => router.replace(pathname)}>Clear filters</button>
           </div>
         ) : (

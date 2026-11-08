@@ -9,9 +9,9 @@ export default function Footer() {
   const [sent, setSent] = useState(false);
   return (
     <footer className="mt-20 sm:mt-32 bg-ink text-cream">
-      <div className="mx-auto grid max-w-[1500px] gap-14 px-6 py-14 sm:px-10 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[1500px] gap-10 px-6 py-12 sm:gap-14 sm:px-10 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <p className="display text-4xl italic leading-tight sm:text-5xl">Join the inner circle.</p>
+          <p className="display text-4xl leading-tight sm:text-5xl">Join the inner circle.</p>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-cream/70">
             New compositions, private releases and a complimentary discovery vial with your first order.
           </p>
@@ -40,9 +40,11 @@ export default function Footer() {
             </button>
           </form>
         </div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:contents">
         <FooterCol title="Shop" links={[["All fragrances", "/shop"], ["Floral", "/shop?family=Floral"], ["Woody", "/shop?family=Woody"], ["Oriental", "/shop?family=Oriental"], ["Fresh & Citrus", "/shop?family=Fresh"]]} />
         <FooterCol title="Maison" links={[["Our story", "/about"], ["Contact", "/contact"], ["Wishlist", "/wishlist"], ["Account", "/account"]]} />
         <FooterCol title="Care" links={[["Shipping & returns", "/contact"], ["Gift wrapping", "/contact"], ["Fragrance guide", "/about"], ["Authenticity", "/about"]]} />
+        </div>
       </div>
       <div className="mx-auto flex max-w-[1500px] flex-col items-start justify-between gap-4 border-t border-white/10 px-6 py-8 text-xs text-cream/60 sm:flex-row sm:px-10">
         <span>© 2026 Maison Aurelle. A demonstration storefront — all products and data are fictional.</span>

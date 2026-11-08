@@ -35,14 +35,14 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
         <Image src="/images/stone-1.png" alt="Chanel N°5 in a carved stone niche" fill priority sizes="50vw" className="object-contain p-[9%] pb-[22%]" />
         
         <div className="pointer-events-none absolute inset-x-12 bottom-14">
-          <p className="display text-5xl italic leading-tight">“A fragrance is an invisible signature.”</p>
+          <p className="display text-5xl leading-tight">“A fragrance is an invisible signature.”</p>
           <p className="eyebrow mt-5 text-gold">Maison Aurelle</p>
         </div>
       </div>
       <div className="flex items-center px-5 pb-16 pt-12 sm:px-14">
         <form onSubmit={submit} noValidate className="mx-auto w-full max-w-md">
           <p className="eyebrow mb-4">{isLogin ? "Welcome back" : "Join the Maison"}</p>
-          <h1 className="display text-6xl italic">{isLogin ? "Sign in" : "Create account"}</h1>
+          <h1 className="display text-6xl">{isLogin ? "Sign in" : "Create account"}</h1>
           <div className="mt-10 space-y-5">
             {!isLogin && (
               <div>

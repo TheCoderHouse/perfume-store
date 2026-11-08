@@ -48,7 +48,8 @@ const VERT = /* glsl */ `
   uniform float uBend;
   uniform float uMask;
   uniform float uZoom;
-  uniform float uH;
+  uniform float uR; // path length scale (x)
+  uniform float uAmp; // path height scale (y)
   uniform float uSide;
   uniform float uSideMask;
   uniform float uSideOff;
@@ -58,9 +59,9 @@ const VERT = /* glsl */ `
 
   // the S-path: nearly flat across the middle, sweeping up to the right and down to the left
   vec2 curve(float xs, out vec2 nrm) {
-    float xn = xs / uH;
-    float y = uBend * uH * (0.1 * xn + 0.17 * xn * xn * xn);
-    float dy = uBend * (0.1 + 0.51 * xn * xn);
+    float xn = xs / uR;
+    float y = uBend * uAmp * (0.1 * xn + 0.17 * xn * xn * xn);
+    float dy = uBend * (uAmp / uR) * (0.1 + 0.51 * xn * xn);
     vec2 T = normalize(vec2(1.0, dy));
     nrm = vec2(-T.y, T.x);
     return vec2(xs, y);
@@ -90,7 +91,7 @@ const FRAG = /* glsl */ `
   uniform float uPlane;
   uniform vec3 uBg;
   uniform float uCw;
-  uniform float uH;
+  uniform float uPanelH;
   uniform float uZoom;
   uniform float uW;
   uniform float uFade;
@@ -99,7 +100,7 @@ const FRAG = /* glsl */ `
 
   void main() {
     // the photo is flat: sample it by where this point is relative to the photo's own (unrotated) centre
-    vec2 uv = (vPos - vCenter) / (vec2(uCw, uH) * uZoom) + 0.5;
+    vec2 uv = (vPos - vCenter) / (vec2(uCw, uPanelH) * uZoom) + 0.5;
     vec3 col = uBg;
     if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0) {
       // cover-fit a square photo into the panel
@@ -146,7 +147,7 @@ export default function Collection() {
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       const root = section.current!;
       const stage = stageRef.current!;
       const track = trackRef.current!;
@@ -160,16 +161,24 @@ export default function Collection() {
       let W = 0;
       let H = 0;
       let cw = 0;
+      let ph = 0; // panel height
+      let lift = 0; // how far the strip is raised above screen centre (px)
       let gap = 0;
       let step = 0;
       const layout = () => {
         W = stage.clientWidth;
         H = stage.clientHeight;
-        cw = Math.min(W * 0.56, H * 0.88);
-        gap = W * 0.011;
+        const phone = W < 900;
+        // desktop: wide panels, full height. phone: one tall-ish panel nearly the screen width, with the strip bending around it
+        cw = phone ? Math.min(W * 0.84, 480) : Math.min(W * 0.56, H * 0.88);
+        ph = phone ? Math.min(H * 0.6, cw * 1.5) : H;
+        lift = phone ? H * 0.05 : 0; // phones: raise the strip so the title below has room
+        gap = W * (phone ? 0.03 : 0.011);
         step = cw + gap;
         stage.style.setProperty("--cg-w", `${cw}px`);
         stage.style.setProperty("--cg-gap", `${gap}px`);
+        stage.style.setProperty("--cg-h", `${ph}px`);
+        track.style.paddingBottom = `${lift * 2}px`; // moves the DOM hit-areas up to match
       };
       layout();
 
@@ -211,7 +220,9 @@ export default function Collection() {
         uSide: { value: 1 },
         uSideMask: { value: 0.045 },
         uSideOff: { value: 0 },
-        uH: { value: 1 },
+        uPanelH: { value: 1 },
+        uR: { value: 1 },
+        uAmp: { value: 1 },
         uPlane: { value: 1 },
       };
       const lits = LIST.map((_, k) => (k === LAND ? 1 : 0));
@@ -233,14 +244,18 @@ export default function Collection() {
         camera.position.set(0, 0, H / 2 / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
         camera.updateProjectionMatrix();
         shared.uCw.value = cw;
-        shared.uH.value = H;
-        shared.uPlane.value = cw / H;
+        shared.uPanelH.value = ph;
+        shared.uPlane.value = cw / ph;
+        scene.position.y = lift;
+        // the S-path is scaled to the screen: by height on a wide screen, by width on a phone
+        shared.uR.value = W < 900 ? W * 0.55 : H;
+        shared.uAmp.value = W < 900 ? H * 0.42 : H;
         // centre of a thin slide, in strip units: clear of the main reel, scaling with it
-        shared.uSideOff.value = H * 0.72;
+        shared.uSideOff.value = ph * 0.72;
         shared.uW.value = W;
         meshes.forEach((m) => {
           m.geometry.dispose();
-          m.geometry = new THREE.PlaneGeometry(cw, H, 56, 4);
+          m.geometry = new THREE.PlaneGeometry(cw, ph, 56, 4);
         });
       };
 
@@ -429,7 +444,7 @@ export default function Collection() {
         trigger: root,
         pin: true,
         start: "top top",
-        end: () => "+=" + (N - 1) * window.innerHeight * 0.9,
+        end: () => "+=" + (N - 1) * window.innerHeight * (window.innerWidth < 900 ? 0.62 : 0.9),
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           prog = self.progress;
@@ -546,15 +561,15 @@ export default function Collection() {
         {/* Desktop stage */}
         <div
           ref={stageRef}
-          className="relative hidden h-[100svh] w-full overflow-hidden bg-[#171513] text-[#efe5d0] min-[900px]:block motion-reduce:hidden"
-          style={{ ["--cg-w" as string]: "min(56vw, 88svh)", ["--cg-gap" as string]: "1.1vw" }}
+          className="relative block h-[100svh] w-full overflow-hidden bg-[#171513] text-[#efe5d0] motion-reduce:hidden"
+          style={{ ["--cg-w" as string]: "min(84vw, 480px)", ["--cg-gap" as string]: "3vw", ["--cg-h" as string]: "64svh" }}
         >
           <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
 
           {/* DOM strip: the click / focus targets (and the no-WebGL fallback). It tracks the WebGL strip exactly. */}
           <div
             ref={trackRef}
-            className="absolute inset-y-0 left-0 flex h-full items-stretch will-change-transform"
+            className="absolute inset-y-0 left-0 flex h-full items-center will-change-transform"
             style={{ columnGap: "var(--cg-gap)", paddingLeft: "calc((100% - var(--cg-w)) / 2)" }}
           >
             {LIST.map((p, i) => (
@@ -569,8 +584,8 @@ export default function Collection() {
                 onFocus={(e) => {
                   if (!e.currentTarget.classList.contains("is-active")) goTo(i);
                 }}
-                className="cg-card relative block h-full shrink-0 overflow-hidden"
-                style={{ width: "var(--cg-w)", ["--cg-bg" as string]: p.bg }}
+                className="cg-card relative block shrink-0 overflow-hidden"
+                style={{ width: "var(--cg-w)", height: "var(--cg-h)", ["--cg-bg" as string]: p.bg }}
               >
                 <div className="cg-img absolute inset-0">
                   <Image src={p.img} alt={`${p.name} in a carved stone niche`} fill sizes="56vw" priority={i < 2} className="object-cover" />
@@ -579,29 +594,30 @@ export default function Collection() {
             ))}
 
             {/* Section heading: sits in the empty ground left of the first panel and scrolls away with it */}
-            <div className="cg-ui pointer-events-none absolute bottom-[12vh] left-[4vw] max-w-[22vw]">
+            <div className="cg-ui pointer-events-none absolute bottom-[12vh] left-[4vw] hidden max-w-[22vw] min-[900px]:block">
               <p className="eyebrow mb-4 opacity-70">The Collection</p>
-              <p className="display text-[clamp(2.4rem,4vw,4.5rem)] italic">Six signatures.</p>
+              <p className="display text-[clamp(2.4rem,4vw,4.5rem)]">Six signatures.</p>
             </div>
           </div>
 
           {/* top bar */}
-          <div className="cg-ui pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-end px-[3vw] pt-24">
+          <div className="cg-ui pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between px-[5vw] pt-24 min-[900px]:justify-end min-[900px]:px-[3vw]">
+            <p className="eyebrow opacity-80 min-[900px]:hidden">The Collection</p>
             <p className="eyebrow tabular-nums opacity-80">
               <span ref={counter}>01</span> / {pad(N)}
             </p>
           </div>
 
           {/* rolling title */}
-          <div className="cg-ui pointer-events-none absolute inset-x-0 bottom-[7vh] z-10 flex flex-col items-center">
-            <div className="relative h-[clamp(5rem,11.5vw,13.5rem)] w-full overflow-hidden">
+          <div className="cg-ui pointer-events-none absolute inset-x-0 bottom-[12svh] z-10 flex flex-col items-center min-[900px]:bottom-[7vh]">
+            <div className="relative h-[clamp(3.6rem,11.5vw,13.5rem)] w-full overflow-hidden">
               {LIST.map((p, i) => (
                 <div key={p.slug} data-i={i} data-pos={i === 0 ? "active" : "after"} className="cg-swap absolute inset-0 flex items-center justify-center">
                   <h2
-                    className={`display relative whitespace-nowrap pb-[0.12em] pr-[0.1em] ${p.name.length > 16 ? "text-[clamp(3rem,6.6vw,8rem)]" : "text-[clamp(4.2rem,10.5vw,12.5rem)]"} italic leading-[1.1] text-[#f6f0e4] drop-shadow-[0_2px_40px_rgba(0,0,0,0.35)]`}
+                    className={`display relative whitespace-nowrap pb-[0.12em] pr-[0.1em] ${p.name.length > 16 ? "text-[clamp(2.1rem,6.6vw,8rem)]" : "text-[clamp(2.9rem,10.5vw,12.5rem)]"} leading-[1.1] text-[#f6f0e4] drop-shadow-[0_2px_40px_rgba(0,0,0,0.35)]`}
                   >
                     {p.name}
-                    <sup className="eyebrow absolute right-0 top-[0.28em] translate-x-full text-[0.8rem] not-italic tracking-[0.2em] opacity-80">({pad(i + 1)})</sup>
+                    <sup className="eyebrow absolute right-0 top-[0.28em] translate-x-full text-[0.8rem] tracking-[0.2em] opacity-80">({pad(i + 1)})</sup>
                   </h2>
                 </div>
               ))}
@@ -610,9 +626,9 @@ export default function Collection() {
           </div>
 
           {/* price + link for the lit panel */}
-          <div className="cg-ui absolute bottom-[5vh] right-[3vw] z-10 h-12 w-64">
+          <div className="cg-ui absolute inset-x-[5vw] bottom-[4svh] z-10 h-12 min-[900px]:inset-x-auto min-[900px]:bottom-[5vh] min-[900px]:right-[3vw] min-[900px]:w-64">
             {LIST.map((p, i) => (
-              <div key={p.slug} data-i={i} data-pos={i === 0 ? "active" : "after"} className="cg-swap absolute inset-0 flex items-center justify-end gap-6">
+              <div key={p.slug} data-i={i} data-pos={i === 0 ? "active" : "after"} className="cg-swap absolute inset-0 flex items-center justify-between gap-6 min-[900px]:justify-end">
                 <span className="text-sm">{inr(startingPrice(p))}</span>
                 <Link href={`/product/${p.slug}`} className="btn !min-h-11 !px-6" tabIndex={-1}>
                   Discover <ArrowUpRight size={14} />
@@ -622,7 +638,7 @@ export default function Collection() {
           </div>
 
           {/* progress ticks */}
-          <div className="cg-ui absolute bottom-[5vh] left-[3vw] z-10 flex gap-2" aria-hidden>
+          <div className="cg-ui absolute bottom-[5vh] left-[3vw] z-10 hidden gap-2 min-[900px]:flex" aria-hidden>
             {LIST.map((p) => (
               <span key={p.slug} className="cg-dot block h-[2px] w-8 bg-current opacity-25 transition-all duration-500 [&.is-on]:w-14 [&.is-on]:opacity-100" />
             ))}
@@ -630,7 +646,7 @@ export default function Collection() {
         </div>
 
         {/* Mobile / reduced motion: swipeable snap carousel */}
-        <div className="py-16 min-[900px]:hidden motion-reduce:block">
+        <div className="hidden py-16 motion-reduce:block">
           <div className="px-5">
             <p className="eyebrow mb-3">The Collection</p>
             <h2 className="display text-5xl">Six signatures.</h2>
@@ -642,7 +658,7 @@ export default function Collection() {
                   <Image src={p.img} alt={`${p.name} in a carved stone niche`} fill sizes="80vw" className="object-contain p-[6%]" />
                 </Link>
                 <p className="eyebrow mt-4 text-[0.6rem] opacity-70">{p.family} · {p.gender}</p>
-                <h3 className="display mt-1.5 text-4xl italic leading-none">{p.name}</h3>
+                <h3 className="display mt-1.5 text-4xl leading-none">{p.name}</h3>
                 <p className="mt-2 text-sm opacity-80">{p.tagline}</p>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-sm">{inr(startingPrice(p))}</span>

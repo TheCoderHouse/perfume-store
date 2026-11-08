@@ -25,7 +25,7 @@ export default function Contact() {
       <section className="mx-auto grid max-w-[1300px] gap-16 px-5 pb-12 sm:px-10 lg:grid-cols-[1.2fr_1fr]">
         {sent ? (
           <div role="status" className="rounded-[2px] bg-[#D9E9DA] p-10 text-[#2F6B4A]">
-            <p className="display text-5xl italic">Merci, {f.name.split(" ")[0]}.</p>
+            <p className="display text-5xl">Merci, {f.name.split(" ")[0]}.</p>
             <p className="mt-3 text-sm">Your message is with our advisors. Expect a reply at {f.email} shortly.</p>
           </div>
         ) : (
@@ -45,7 +45,7 @@ export default function Contact() {
             return <div key={t as string} className="flex gap-5"><Icon size={22} strokeWidth={1.3} className="mt-1 text-accent" /><div><p className="label !mb-1">{t as string}</p><p className="text-sm opacity-80">{d as string}</p></div></div>;
           })}
           <div className="rounded-[2px] border border-line p-7">
-            <p className="display text-3xl italic">Shipping & returns</p>
+            <p className="display text-3xl">Shipping & returns</p>
             <p className="mt-3 text-sm leading-relaxed opacity-75">Free delivery over ₹10,000. Returns accepted within 14 days on unopened flacons. Gift wrapping is always complimentary.</p>
           </div>
         </aside>
