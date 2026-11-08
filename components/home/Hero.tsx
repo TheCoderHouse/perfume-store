@@ -13,13 +13,10 @@ import type { HeroSlide } from "./HeroWorld";
 const HeroWorld = dynamic(() => import("./HeroWorld"), { ssr: false, loading: () => null });
 
 const RAW: (HeroSlide & { href: string; label?: string })[] = [
-  { slug: "chanel-no5", href: "chanel-no5", lines: ["N°5", "CHANEL"], img: "/images/stone-1.png", focus: [0.5, 0.5], sky: "#2a1c10", glow: "#e0b07a", ground: "#170f08" },
   { slug: "coco-mademoiselle", href: "coco-mademoiselle", lines: ["COCO", "MADEMOISELLE"], img: "/images/stone-2.png", focus: [0.5, 0.5], sky: "#2a1514", glow: "#d98a80", ground: "#180b0a" },
   { slug: "nectarine-blossom-honey", href: "nectarine-blossom-honey", lines: ["NECTARINE", "BLOSSOM"], img: "/images/stone-3.png", focus: [0.5, 0.5], sky: "#241d12", glow: "#d9bd86", ground: "#15110a" },
   { slug: "red-diamond", href: "red-diamond", lines: ["RED", "DIAMOND"], img: "/images/stone-4.png", focus: [0.5, 0.5], sky: "#2a0a0e", glow: "#e0453a", ground: "#160608" },
   { slug: "versace-eros", href: "versace-eros", lines: ["VERSACE", "EROS"], img: "/images/stone-5.png", focus: [0.5, 0.5], sky: "#06181c", glow: "#2fb6b0", ground: "#040e10" },
-  { slug: "ysl-libre", href: "ysl-libre", lines: ["LIBRE", "YSL"], img: "/images/stone-6.png", focus: [0.5, 0.5], sky: "#221d0a", glow: "#d8b94a", ground: "#14110a" },
-  { slug: "ysl-libre-intense", href: "ysl-libre", label: "Libre Intense", lines: ["LIBRE", "INTENSE"], img: "/images/stone-7.png", focus: [0.5, 0.5], sky: "#0b0907", glow: "#b8862f", ground: "#0a0705" },
 ];
 const SLIDES = RAW.map((s) => ({ ...s, name: s.label ?? getProduct(s.href)!.name }));
 
