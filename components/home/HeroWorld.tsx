@@ -31,17 +31,17 @@ function drawTitle(lines: [string, string], outline: boolean, fam: string) {
   const g = c.getContext("2d")!;
   let size = 340;
   const spacing = (s: number) => s * 0.07;
-  const width = (txt: string, s: number, italic: boolean) => {
-    g.font = `${italic ? "italic 300" : "400"} ${s}px ${fam}`;
+  const width = (txt: string, s: number, light: boolean) => {
+    g.font = `${light ? "300" : "400"} ${s}px ${fam}`;
     return [...txt].reduce((w, ch) => w + g.measureText(ch).width + spacing(s), -spacing(s));
   };
   while (size > 120 && Math.max(width(lines[0], size, false), width(lines[1], size, true)) > 2200) size -= 10;
   g.textBaseline = "middle";
   g.lineJoin = "round";
   [lines[0], lines[1]].forEach((txt, li) => {
-    const italic = li === 1;
-    g.font = `${italic ? "italic 300" : "400"} ${size}px ${fam}`;
-    let x = c.width / 2 - width(txt, size, italic) / 2;
+    const light = li === 1; // the second line is set in the light weight (never italic)
+    g.font = `${light ? "300" : "400"} ${size}px ${fam}`;
+    let x = c.width / 2 - width(txt, size, light) / 2;
     const y = 300 + li * (size * 0.98);
     for (const ch of txt) {
       if (outline) {
@@ -190,7 +190,7 @@ function World({ slides, t, onOpen, mobile }: { slides: HeroSlide[]; t: number; 
     (async () => {
       const fam = getComputedStyle(document.documentElement).getPropertyValue("--font-cormorant").trim() || "Georgia, serif";
       try {
-        await Promise.all([document.fonts.load(`400 120px ${fam}`), document.fonts.load(`italic 300 120px ${fam}`)]);
+        await Promise.all([document.fonts.load(`400 120px ${fam}`), document.fonts.load(`300 120px ${fam}`)]);
       } catch {}
       if (dead) return;
       setTitles(slides.map((s) => ({ solid: drawTitle(s.lines, false, fam), outline: drawTitle(s.lines, true, fam) })));
@@ -225,7 +225,7 @@ function World({ slides, t, onOpen, mobile }: { slides: HeroSlide[]; t: number; 
     if (tn.w === 0) {
       const im0 = textures[0].image as HTMLImageElement;
       const fa0 = Math.min(1.45, Math.max(0.66, im0.width / im0.height));
-      tn.h = Math.min(mobile ? 3.2 : 3.6, 4.6 / fa0);
+      tn.h = Math.min(mobile ? 2.6 : 3.6, 4.6 / fa0);
       tn.w = tn.h * fa0;
       if (cap.current) cap.current.scale.set(tn.w, tn.h, 1);
     }
@@ -237,7 +237,7 @@ function World({ slides, t, onOpen, mobile }: { slides: HeroSlide[]; t: number; 
       u.uImg.value = asp;
       u.uFrame.value = fa;
       u.uFoc.value.set(...slides[i].focus);
-      const H = Math.min(mobile ? 3.2 : 3.6, 4.6 / fa);
+      const H = Math.min(mobile ? 2.6 : 3.6, 4.6 / fa);
       tn.w = H * fa;
       tn.h = H;
     };
@@ -266,7 +266,7 @@ function World({ slides, t, onOpen, mobile }: { slides: HeroSlide[]; t: number; 
       tn.start = tn.cur;
     }
     if (cap.current) {
-      cap.current.position.y = 0.62 + Math.sin(time * 0.8) * 0.07 * m;
+      cap.current.position.y = (mobile ? 1.45 : 0.62) + Math.sin(time * 0.8) * 0.07 * m;
       cap.current.rotation.y = tn.cur + pointer.x * 0.28 * m;
       cap.current.rotation.x = THREE.MathUtils.damp(cap.current.rotation.x, -pointer.y * 0.1 * m, 4, dt);
       cap.current.scale.x = THREE.MathUtils.damp(cap.current.scale.x, tn.w, 5, dt);
@@ -293,7 +293,7 @@ function World({ slides, t, onOpen, mobile }: { slides: HeroSlide[]; t: number; 
       const ad = Math.abs(d);
       const a = d * step;
       g.visible = ad < 2.7;
-      g.position.set(Math.sin(a) * R, -0.85, (Math.cos(a) - 1) * R + 1.5);
+      g.position.set(Math.sin(a) * R, mobile ? -1.15 : -0.85, (Math.cos(a) - 1) * R + 1.5);
       g.rotation.y = a * 1.05;
       g.scale.setScalar(sc * (1 - 0.2 * smooth(0, 1, ad)));
       const sm = solidRefs.current[i];

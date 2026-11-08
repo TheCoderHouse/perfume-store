@@ -97,7 +97,7 @@ export default function ProductView({ product: p }: { product: Product }) {
             <span className="h-px w-8 bg-current" /> {brandOf(p)} · {p.family} · {p.gender}
             {p.badge && <span className="rounded-none border border-current px-3 py-1 text-[0.55rem]">{p.badge}</span>}
           </p>
-          <h1 className="display mt-4 text-[clamp(2.8rem,12vw,3.6rem)] italic sm:text-[clamp(3.4rem,7vw,6.5rem)]">{p.name}</h1>
+          <h1 className="display mt-4 text-[clamp(2.8rem,12vw,3.6rem)] sm:text-[clamp(3.4rem,7vw,6.5rem)]">{p.name}</h1>
           <p className="display mt-2 text-2xl opacity-80">{p.tagline}</p>
           <a href="#reviews" className="mt-5 inline-flex items-center gap-2 text-sm">
             <span className="flex text-accent">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={15} className={i < Math.round(p.rating) ? "fill-current" : ""} />)}</span>
@@ -170,7 +170,7 @@ export default function ProductView({ product: p }: { product: Product }) {
       </section>
 
       <section id="reviews" className="mx-auto max-w-[1600px] px-5 py-24 sm:px-10">
-        <Words text="What wearers say." className="display text-5xl italic sm:text-7xl" />
+        <Words text="What wearers say." className="display text-5xl sm:text-7xl" />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {REVIEWS.map((r, i) => (
             <Reveal key={r.n} delay={i * 90} className="rounded-[2px] border border-line p-8">
@@ -184,7 +184,7 @@ export default function ProductView({ product: p }: { product: Product }) {
       </section>
 
       <section className="mx-auto max-w-[1600px] px-5 pb-28 sm:px-10 lg:pb-12">
-        <Words text="Continue the journey." className="display mb-12 text-5xl italic sm:text-7xl" />
+        <Words text="Continue the journey." className="display mb-12 text-5xl sm:text-7xl" />
         <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">
           {related.map((r) => <ProductCard key={r.slug} p={r} />)}
         </div>

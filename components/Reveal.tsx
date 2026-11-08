@@ -48,20 +48,18 @@ export function Words({
   className = "",
   delay = 0,
   as: Tag = "h2",
-  italic,
 }: {
   text: string;
   className?: string;
   delay?: number;
   as?: ElementType;
-  italic?: string[];
 }) {
   const [ref, inView] = useInView<HTMLElement>(0.1);
   return (
     <Tag ref={ref} className={`${inView ? "in" : ""} ${className}`} style={{ "--d": delay } as React.CSSProperties} aria-label={text}>
       {text.split(" ").map((w, i) => (
         <span key={i} className="mask-word" aria-hidden>
-          <span style={{ "--i": i } as React.CSSProperties} className={italic?.includes(w) ? "italic" : ""}>
+          <span style={{ "--i": i } as React.CSSProperties}>
             {w}&nbsp;
           </span>
         </span>
@@ -76,7 +74,7 @@ export function Marquee({ items, className = "" }: { items: string[]; className?
     <div className={`overflow-hidden ${className}`} aria-hidden>
       <div className="marquee-track">
         {row.concat(row).map((t, i) => (
-          <span key={i} className="display flex items-center gap-10 pr-10 text-5xl italic sm:text-7xl">
+          <span key={i} className="display flex items-center gap-10 pr-10 text-5xl sm:text-7xl">
             {t}
             <span className="size-2 rotate-45 bg-accent" />
           </span>

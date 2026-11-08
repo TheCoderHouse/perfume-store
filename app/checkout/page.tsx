@@ -83,7 +83,7 @@ export default function CheckoutPage() {
         <div className="space-y-12">
           {!user && <p className="rounded-[2px] border border-line p-4 text-sm">Have an account? <Link href="/login?next=/checkout" className="u-link font-semibold">Sign in</Link> for faster checkout.</p>}
           <fieldset className="space-y-5">
-            <legend className="display mb-5 text-3xl italic">Contact</legend>
+            <legend className="display mb-5 text-3xl">Contact</legend>
             {field("email", "Email", { type: "email", autoComplete: "email" })}
             <div className="grid gap-5 sm:grid-cols-2">
               {field("name", "Full name", { autoComplete: "name" })}
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
           <fieldset className="space-y-5">
-            <legend className="display mb-5 text-3xl italic">Delivery</legend>
+            <legend className="display mb-5 text-3xl">Delivery</legend>
             {field("address", "Address", { autoComplete: "street-address" })}
             <div className="grid gap-5 sm:grid-cols-2">
               {field("city", "City", { autoComplete: "address-level2" })}
@@ -99,7 +99,7 @@ export default function CheckoutPage() {
             </div>
           </fieldset>
           <fieldset>
-            <legend className="display mb-2 text-3xl italic">Payment</legend>
+            <legend className="display mb-2 text-3xl">Payment</legend>
             <p className="mb-5 text-xs opacity-65">Demonstration store — no payment is taken and nothing is stored on a server.</p>
             <div className="mb-6 flex flex-wrap gap-3">
               {([["card", "Card"], ["upi", "UPI"], ["cod", "Cash on delivery"]] as const).map(([v, l]) => (

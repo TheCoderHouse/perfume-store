@@ -13,7 +13,7 @@ import Cursor from "@/components/Cursor";
 const display = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   variable: "--font-cormorant",
   display: "swap",
 });

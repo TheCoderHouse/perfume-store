@@ -14,7 +14,7 @@ export default function Spotlight3D() {
       <div className="mx-auto grid max-w-[1600px] items-center gap-6 px-5 py-14 sm:px-10 sm:py-20 lg:grid-cols-2 lg:py-28">
         <div className="order-2 lg:order-1">
           <p className="eyebrow mb-6 text-[#d4a24c]">The Art of Display</p>
-          <Words text="Hold it in your hands." className="display text-5xl italic sm:text-7xl" />
+          <Words text="Hold it in your hands." className="display text-5xl sm:text-7xl" />
           <Reveal delay={200} className="mt-8 max-w-md text-sm leading-relaxed opacity-80">
             Libre Intense, set in hand-carved stone: gold, amber and a quiet dark. Every flacon is photographed in its own sculpted setting before it ever reaches your door.
           </Reveal>

@@ -11,7 +11,7 @@ export default function Icons() {
   return (
     <section className="mx-auto max-w-[1600px] px-5 pb-12 sm:px-10">
       <div className="mb-14 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-        <Words text="The icons." className="display text-6xl italic sm:text-8xl" />
+        <Words text="The icons." className="display text-6xl sm:text-8xl" />
         <div className="flex items-center gap-8">
           <p className="max-w-xs text-sm leading-relaxed opacity-75">Authenticated designer houses, curated alongside our own compositions.</p>
           <Link href="/shop?house=designer" className="btn btn-ghost max-sm:!hidden">View houses <ArrowRight size={14} /></Link>

@@ -30,7 +30,7 @@ export default function Craft() {
       <div className="mx-auto grid max-w-[1600px] gap-10 px-5 py-16 sm:gap-16 sm:px-10 sm:py-28 lg:grid-cols-2 lg:py-40">
         <div className="lg:sticky lg:top-28 lg:self-start lg:h-[70svh]">
           <p className="eyebrow mb-6 text-gold">The Craft</p>
-          <Words text="Slow by design. Exact by nature." className="display text-5xl italic sm:text-7xl" />
+          <Words text="Slow by design. Exact by nature." className="display text-5xl sm:text-7xl" />
           <p className="mt-8 max-w-md text-sm leading-relaxed text-cream/70">
             In a world of fast fragrance, we choose the long way round. Three patient stages, one unhurried philosophy.
           </p>
@@ -42,7 +42,7 @@ export default function Craft() {
                 <Image src={s.img} alt="" fill sizes="(min-width:1024px) 45vw, 90vw" className="object-cover" />
               </div>
               <div className="mt-6 flex gap-6">
-                <span className="display text-5xl italic text-gold">{s.n}</span>
+                <span className="display text-5xl text-gold">{s.n}</span>
                 <div>
                   <h3 className="display text-3xl">{s.t}</h3>
                   <p className="mt-2 max-w-md text-sm leading-relaxed text-cream/70">{s.d}</p>

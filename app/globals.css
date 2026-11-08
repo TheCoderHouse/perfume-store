@@ -312,3 +312,62 @@ html.lenis body {
 .hero-progress {
   animation: hero-progress 6.5s linear forwards;
 }
+
+/* Collection gallery: the strip is drawn in WebGL; these DOM cards are hit-areas + the no-WebGL fallback */
+.cg-card {
+  background: var(--cg-bg);
+}
+.cg-card .cg-img {
+  filter: grayscale(1) brightness(0.32);
+  transition: filter 0.9s var(--ease);
+}
+.cg-card.is-active .cg-img {
+  filter: none;
+}
+.cg-gl .cg-card {
+  background: transparent;
+}
+.cg-gl .cg-card .cg-img {
+  opacity: 0;
+}
+.cg-lit .cg-card {
+  pointer-events: none;
+}
+.cg-swap {
+  transition:
+    transform 0.9s var(--ease),
+    opacity 0.6s var(--ease);
+}
+.cg-swap[data-pos="before"] {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+.cg-swap[data-pos="after"] {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* No italics anywhere on the site */
+em,
+i,
+cite,
+address,
+dfn,
+var {
+  font-style: normal;
+}
+
+/* Phones: a smaller type scale for a calmer, more readable layout */
+@media (max-width: 639px) {
+  html {
+    font-size: 14px;
+  }
+  .text-9xl { font-size: 3.4rem; }
+  .text-8xl { font-size: 3rem; }
+  .text-7xl { font-size: 2.6rem; }
+  .text-6xl { font-size: 2.3rem; }
+  .text-5xl { font-size: 2rem; }
+  .text-4xl { font-size: 1.65rem; }
+  .text-3xl { font-size: 1.4rem; }
+  .text-2xl { font-size: 1.2rem; }
+}
